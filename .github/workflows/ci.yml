@@ -1,0 +1,83 @@
+name: CI
+
+on:
+  workflow_dispatch:
+  pull_request:
+    types: [opened, synchronize, ready_for_review]
+
+# cancel running actions for current PR if new commits were pushed
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check-changelog:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v34
+
+      - name: Check if changelog was touched
+        run: |
+          changelogFound=$(echo ${{ steps.changed-files.outputs.all_changed_files }} | grep -ow "CHANGELOG.md" | wc -w)
+          if [ $changelogFound -eq 0 ]; then
+            echo '### :boom: Please update the changelog accordingly (https://keepachangelog.com)' >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+
+  build-and-test:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install yarn dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Check prettier
+        run: yarn prettier-check
+
+      - name: Run lint
+        run: yarn lint
+
+      - name: Run build
+        run: yarn build
+
+      - name: Check changed files
+        run: |
+          git update-index -q --refresh
+          if ! git diff-index --quiet HEAD --; then
+            echo "Some files changed after build:"
+            echo
+            git diff --stat
+            echo
+            echo "Please rebuild it locally and commit all the files"
+            exit 1
+          fi
+
+  send-test-notification:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - uses: cardinalby/git-get-release-action@v1
+        id: get_release
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          latest: true
+
+      - name: Use our own action to send a notification
+        uses: ./
+        with:
+          slack-channel-ids: "C048JJFRTUH"
+          release-id: ${{ steps.get_release.outputs.id }}
+          slack-token: ${{ secrets.SLACK_RELEASE_NOTIFIER_TOKEN }}

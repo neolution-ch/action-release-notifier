@@ -1,0 +1,46 @@
+name: "Neolution GitHub Release Notifier"
+author: "Neolution"
+branding:
+  icon: "check-circle"
+  color: "orange"
+description: "This action notifies the release of a new version to a Slack channel."
+inputs:
+  slack-token:
+    description: >
+      The Slack token to use for the notification.
+    required: true
+
+  slack-channel-ids:
+    description: >
+      A comma seperated list of the the Slack channel IDs to notify about the release.
+      Channel IDs can be found in the slack guy when clicking on the info button of a channel or user.
+    required: true
+
+  github-token:
+    description: >
+      Personal access token (PAT) used to fetch the repository. The PAT is configured
+      with the local git config, which enables your scripts to run authenticated git
+      commands. The post-job step removes the PAT.
+      We recommend using a service account with the least permissions necessary.
+      Also when generating a new PAT, select the least scopes necessary.
+      [Learn more about creating and using encrypted secrets](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/creating-and-using-encrypted-secrets)
+    default: ${{ github.token }}
+
+  repo:
+    description: >
+      The repository to fetch the release from. Defaults to the current repository.
+    default: ${{ github.repository }}
+
+  include-release-notes:
+    description: >
+      Whether to include the release notes in the notification.
+    default: "true"
+
+  release-id:
+    description: >
+      The ID of the release to notify about. 
+      If you use a on: release: trigger, this is not required.
+
+runs:
+  using: "node16"
+  main: "dist/index.js"

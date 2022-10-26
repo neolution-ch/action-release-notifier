@@ -1,0 +1,95 @@
+import { info } from "@actions/core";
+import { WebClient, Block, KnownBlock } from "@slack/web-api";
+import slackifyMarkdown from "slackify-markdown";
+import { ActionInputs } from "./actionInputs";
+import { ReleaseResponse } from "./types";
+
+function getMessageBlocks(
+  mainTitle: string,
+  releaseBodyText: string,
+  releaseName: string | null,
+  releaseHtmlUrl: string,
+  includeReleaseNotes: boolean,
+) {
+  const blocks: Block[] | KnownBlock[] = [
+    {
+      type: "header",
+      text: {
+        type: "plain_text",
+        text: mainTitle,
+        emoji: true,
+      },
+    },
+  ];
+
+  if (includeReleaseNotes && releaseBodyText) {
+    blocks.push(
+      {
+        type: "header",
+        text: {
+          type: "plain_text",
+          text: "Release Notes:",
+          emoji: true,
+        },
+      },
+      {
+        type: "divider",
+      },
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: slackifyMarkdown(releaseBodyText),
+        },
+      },
+    );
+  }
+
+  blocks.push(
+    {
+      type: "divider",
+    },
+    {
+      type: "section",
+      text: {
+        type: "mrkdwn",
+        text: "View release on GitHub:",
+      },
+      accessory: {
+        type: "button",
+        text: {
+          type: "plain_text",
+          text: `Release ${releaseName}`,
+          emoji: true,
+        },
+        url: releaseHtmlUrl,
+      },
+    },
+  );
+
+  return blocks;
+}
+
+async function postSlackMessage(repoName: string, releaseData: ReleaseResponse, actionInputs: ActionInputs) {
+  const { name: releaseName, body: releaseBody, html_url: releaseHtmlUrl } = releaseData;
+  const { slackToken, slackChannelIds, includeReleaseNotes } = actionInputs;
+
+  const mainTitle = `${repoName} ${releaseName} has been released! :tada: :rocket:`;
+  const releaseBodyText = releaseBody ?? "";
+  const slackWebApi = new WebClient(slackToken);
+  const blocks: Block[] | KnownBlock[] = getMessageBlocks(mainTitle, releaseBodyText, releaseName, releaseHtmlUrl, includeReleaseNotes);
+
+  slackChannelIds.split(",").forEach(async (channelId) => {
+    info(`Posting to channel ${channelId}`);
+
+    await slackWebApi.chat.postMessage({
+      channel: channelId,
+      text: mainTitle,
+      blocks: blocks,
+    });
+  });
+
+  //   result.ok ? info(`Message posted successfully to ${slackChannelIds}`) : error("Message failed to post");
+}
+
+export { postSlackMessage };
