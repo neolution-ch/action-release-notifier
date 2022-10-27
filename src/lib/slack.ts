@@ -74,7 +74,7 @@ const beautifyGitHubLinks = (releaseBody: string) => {
   const pullRequestRegex = /(https:\/\/github.com\/.*\/pull\/(\d*))/g;
   const compareRegex = /(https:\/\/github.com\/.*\/compare\/(.*))/g;
 
-  return releaseBody.replace(pullRequestRegex, "[#$2]($1)").replace(compareRegex, "[2]($1)");
+  return releaseBody.replace(pullRequestRegex, "[#$2]($1)").replace(compareRegex, "[$2]($1)");
 };
 
 async function postSlackMessage(repoName: string, releaseData: ReleaseResponse, actionInputs: ActionInputs) {
