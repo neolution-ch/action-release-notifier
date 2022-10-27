@@ -83,3 +83,4 @@ jobs:
           github-token: ${{ secrets.TEST_TOKEN }}
           release-id: ${{ steps.get_release.outputs.id }}
           slack-token: ${{ secrets.SLACK_RELEASE_NOTIFIER_TOKEN }}
+          repo: neolution-ch/sqbroker-dam
