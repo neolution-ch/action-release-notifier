@@ -71,16 +71,13 @@ jobs:
       - uses: cardinalby/git-get-release-action@v1
         id: get_release
         env:
-          GITHUB_TOKEN: ${{ secrets.TEST_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
         with:
-          tag: v2022-10-27
-          repo: neolution-ch/sqbroker-dam
+          latest: true
 
       - name: Use our own action to send a notification
         uses: ./
         with:
           slack-channel-ids: "C048JJFRTUH"
-          github-token: ${{ secrets.TEST_TOKEN }}
           release-id: ${{ steps.get_release.outputs.id }}
           slack-token: ${{ secrets.SLACK_RELEASE_NOTIFIER_TOKEN }}
-          repo: neolution-ch/sqbroker-dam
