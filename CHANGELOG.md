@@ -9,4 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+Added the functionality to beautify automatically created github release notes urls.
+
+## [1.0.0] - 2022-10-27
+
+### Added
+
 - Created a new action to post a GitHub release to Slack :tada:
+
+[unreleased]: https://github.com/neolution-ch/action-release-notifier/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/neolution-ch/action-release-notifier/releases/tag/v1.0.0

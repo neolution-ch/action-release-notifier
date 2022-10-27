@@ -70,12 +70,19 @@ function getMessageBlocks(
   return blocks;
 }
 
+const beautifyGitHubLinks = (releaseBody: string) => {
+  const pullRequestRegex = /(https:\/\/github.com\/.*\/pull\/(\d*))/g;
+  const compareRegex = /(https:\/\/github.com\/.*\/compare\/(.*))/g;
+
+  return releaseBody.replace(pullRequestRegex, "[#$2]($1)").replace(compareRegex, "[2]($1)");
+};
+
 async function postSlackMessage(repoName: string, releaseData: ReleaseResponse, actionInputs: ActionInputs) {
   const { name: releaseName, body: releaseBody, html_url: releaseHtmlUrl } = releaseData;
   const { slackToken, slackChannelIds, includeReleaseNotes } = actionInputs;
 
   const mainTitle = `${repoName} ${releaseName} has been released! :tada: :rocket:`;
-  const releaseBodyText = releaseBody ?? "";
+  const releaseBodyText = beautifyGitHubLinks(releaseBody ?? "");
   const slackWebApi = new WebClient(slackToken);
   const blocks: Block[] | KnownBlock[] = getMessageBlocks(mainTitle, releaseBodyText, releaseName, releaseHtmlUrl, includeReleaseNotes);
 
