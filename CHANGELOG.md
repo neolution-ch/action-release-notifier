@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added the functionality to beautify automatically created github release notes urls.
 - Added missing @typescript-eslint/eslint-plugin package to the dependencies.
 - Added LICENSE.md
+- Added CODEOWNERS file
 
 ## [1.0.0] - 2022-10-27
 
