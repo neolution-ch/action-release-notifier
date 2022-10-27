@@ -32259,7 +32259,7 @@ function getMessageBlocks(mainTitle, releaseBodyText, releaseName, releaseHtmlUr
 const beautifyGitHubLinks = (releaseBody) => {
     const pullRequestRegex = /(https:\/\/github.com\/.*\/pull\/(\d*))/g;
     const compareRegex = /(https:\/\/github.com\/.*\/compare\/(.*))/g;
-    return releaseBody.replace(pullRequestRegex, "[#$2]($1)").replace(compareRegex, "[2]($1)");
+    return releaseBody.replace(pullRequestRegex, "[#$2]($1)").replace(compareRegex, "[$2]($1)");
 };
 async function postSlackMessage(repoName, releaseData, actionInputs) {
     const { name: releaseName, body: releaseBody, html_url: releaseHtmlUrl } = releaseData;
