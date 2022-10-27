@@ -15,7 +15,7 @@
   "main": "dist/src/index.js",
   "scripts": {
     "build": "ncc build src/index.ts --license licenses.txt -o dist && shx sed -i \"s/\\x0D$//g\" ./dist/index.js",
-    "cli": "node -r ts-node/register src/bin/cli.ts",
+    "cli": "node -r ts-node/register src/index.ts",
     "lint": "eslint src/**/*.ts --cache --max-warnings 0",
     "prettier-check": "prettier --check .",
     "prettier-write": "prettier --write ."
@@ -28,6 +28,7 @@
   },
   "devDependencies": {
     "@types/node": "^18.11.6",
+    "@typescript-eslint/eslint-plugin": "^5.41.0",
     "@typescript-eslint/parser": "^5.41.0",
     "@vercel/ncc": "^0.34.0",
     "eslint": "^8.26.0",
