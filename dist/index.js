@@ -32248,7 +32248,7 @@ function getMessageBlocks(mainTitle, releaseBodyText, releaseName, releaseHtmlUr
             type: "button",
             text: {
                 type: "plain_text",
-                text: `Release ${releaseName}`,
+                text: `${releaseName}`,
                 emoji: true,
             },
             url: releaseHtmlUrl,

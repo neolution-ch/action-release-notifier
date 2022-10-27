@@ -59,7 +59,7 @@ function getMessageBlocks(
         type: "button",
         text: {
           type: "plain_text",
-          text: `Release ${releaseName}`,
+          text: `${releaseName}`,
           emoji: true,
         },
         url: releaseHtmlUrl,
