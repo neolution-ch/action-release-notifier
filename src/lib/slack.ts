@@ -4,6 +4,8 @@ import slackifyMarkdown from "slackify-markdown";
 import { ActionInputs } from "./actionInputs";
 import { ReleaseResponse } from "./types";
 
+const RELEASE_BODY_TEXT_MAX_LENGTH = 2900;
+
 function getMessageBlocks(
   mainTitle: string,
   releaseBodyText: string,
@@ -23,6 +25,13 @@ function getMessageBlocks(
   ];
 
   if (includeReleaseNotes && releaseBodyText) {
+    let markDownText = slackifyMarkdown(releaseBodyText);
+
+    if (markDownText.length > RELEASE_BODY_TEXT_MAX_LENGTH) {
+      info(`Release notes are too long to post to slack, truncating to ${RELEASE_BODY_TEXT_MAX_LENGTH} characters`);
+      markDownText = `${markDownText.substring(0, RELEASE_BODY_TEXT_MAX_LENGTH)}... \n\n*Release notes truncated due to length*`;
+    }
+
     blocks.push(
       {
         type: "header",
@@ -39,7 +48,7 @@ function getMessageBlocks(
         type: "section",
         text: {
           type: "mrkdwn",
-          text: slackifyMarkdown(releaseBodyText),
+          text: markDownText,
         },
       },
     );

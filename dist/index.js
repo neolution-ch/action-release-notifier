@@ -32207,6 +32207,7 @@ exports.postSlackMessage = void 0;
 const core_1 = __nccwpck_require__(2186);
 const web_api_1 = __nccwpck_require__(431);
 const slackify_markdown_1 = __importDefault(__nccwpck_require__(9418));
+const RELEASE_BODY_TEXT_MAX_LENGTH = 2900;
 function getMessageBlocks(mainTitle, releaseBodyText, releaseName, releaseHtmlUrl, includeReleaseNotes) {
     const blocks = [
         {
@@ -32219,6 +32220,11 @@ function getMessageBlocks(mainTitle, releaseBodyText, releaseName, releaseHtmlUr
         },
     ];
     if (includeReleaseNotes && releaseBodyText) {
+        let markDownText = (0, slackify_markdown_1.default)(releaseBodyText);
+        if (markDownText.length > RELEASE_BODY_TEXT_MAX_LENGTH) {
+            (0, core_1.info)(`Release notes are too long to post to slack, truncating to ${RELEASE_BODY_TEXT_MAX_LENGTH} characters`);
+            markDownText = `${markDownText.substring(0, RELEASE_BODY_TEXT_MAX_LENGTH)}... \n\n*Release notes truncated due to length*`;
+        }
         blocks.push({
             type: "header",
             text: {
@@ -32232,7 +32238,7 @@ function getMessageBlocks(mainTitle, releaseBodyText, releaseName, releaseHtmlUr
             type: "section",
             text: {
                 type: "mrkdwn",
-                text: (0, slackify_markdown_1.default)(releaseBodyText),
+                text: markDownText,
             },
         });
     }
