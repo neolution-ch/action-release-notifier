@@ -32180,6 +32180,9 @@ const getActionInputs = () => {
     const repo = (0, core_1.getInput)("repo", { required: true });
     const includeReleaseNotes = (0, core_1.getInput)("include-release-notes", { required: true }) === "true";
     const releaseId = parseInt((0, core_1.getInput)("release-id", { required: false })) || 0;
+    const ignoreAlphaReleases = (0, core_1.getInput)("ignore-alpha-releases", { required: false }) === "true";
+    const ignoreBetaReleases = (0, core_1.getInput)("ignore-beta-releases", { required: false }) === "true";
+    const ignoreRcReleases = (0, core_1.getInput)("ignore-rc-releases", { required: false }) === "true";
     return {
         slackToken,
         slackChannelIds,
@@ -32187,6 +32190,9 @@ const getActionInputs = () => {
         repo,
         includeReleaseNotes,
         releaseId,
+        ignoreAlphaReleases,
+        ignoreBetaReleases,
+        ignoreRcReleases,
     };
 };
 exports.getActionInputs = getActionInputs;
@@ -32530,6 +32536,18 @@ const run = async () => {
         release_id: releaseId,
     });
     (0, core_1.info)(`Found release: '${release.data.name}'`);
+    if (actionInputs.ignoreAlphaReleases && release.data.tag_name.includes("alpha")) {
+        (0, core_1.info)("Ignoring alpha release");
+        return;
+    }
+    if (actionInputs.ignoreBetaReleases && release.data.tag_name.includes("beta")) {
+        (0, core_1.info)("Ignoring beta release");
+        return;
+    }
+    if (actionInputs.ignoreRcReleases && release.data.tag_name.includes("rc")) {
+        (0, core_1.info)("Ignoring rc release");
+        return;
+    }
     await (0, slack_1.postSlackMessage)(repoName, release.data, actionInputs);
 };
 run();
