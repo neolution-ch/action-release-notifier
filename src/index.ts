@@ -26,6 +26,21 @@ const run = async () => {
 
   info(`Found release: '${release.data.name}'`);
 
+  if (actionInputs.ignoreAlphaReleases && release.data.tag_name.includes("alpha")) {
+    info("Ignoring alpha release");
+    return;
+  }
+
+  if (actionInputs.ignoreBetaReleases && release.data.tag_name.includes("beta")) {
+    info("Ignoring beta release");
+    return;
+  }
+
+  if (actionInputs.ignoreRcReleases && release.data.tag_name.includes("rc")) {
+    info("Ignoring rc release");
+    return;
+  }
+
   await postSlackMessage(repoName, release.data, actionInputs);
 };
 

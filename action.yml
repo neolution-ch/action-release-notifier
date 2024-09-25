@@ -41,6 +41,21 @@ inputs:
       The ID of the release to notify about. 
       If you use a on: release: trigger, this is not required.
 
+  ignore-alpha-releases:
+    description: >
+      Whether to ignore alpha releases.
+    default: "false"
+
+  ignore-beta-releases:
+    description: >
+      Whether to ignore beta releases.
+    default: "false"
+
+  ignore-rc-releases:
+    description: >
+      Whether to ignore release candidate releases.
+    default: "false"
+
 runs:
   using: "node16"
   main: "dist/index.js"
