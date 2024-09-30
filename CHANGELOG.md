@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added support to ignore alpha, beta and rc releases. This can be configured by setting the `ignore-alpha-releases`, `ignore-beta-releases` and `ignore-rc-releases` input parameters to `true`.
+
 ### dependabot: \#5 Bump word-wrap from 1.2.3 to 1.2.5
 
 ### dependabot: \#3 Bump json5 from 1.0.1 to 1.0.2
