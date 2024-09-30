@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.0] - 2024-09-30
+
 ### Added
 
 - Added support to ignore alpha, beta and rc releases. This can be configured by setting the `ignore-alpha-releases`, `ignore-beta-releases` and `ignore-rc-releases` input parameters to `true`.
@@ -36,7 +38,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Created a new action to post a GitHub release to Slack :tada:
 
-[unreleased]: https://github.com/neolution-ch/action-release-notifier/compare/v1.2.0...HEAD
+[unreleased]: https://github.com/neolution-ch/action-release-notifier/compare/v1.3.0...HEAD
+[1.3.0]: https://github.com/neolution-ch/action-release-notifier/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/neolution-ch/action-release-notifier/compare/v1...v1.2.0
 [1.1.0]: https://github.com/neolution-ch/action-release-notifier/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/neolution-ch/action-release-notifier/releases/tag/v1.0.0
