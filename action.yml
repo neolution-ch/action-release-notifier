@@ -56,6 +56,12 @@ inputs:
       Whether to ignore release candidate releases.
     default: "false"
 
+  fallback-to-ref:
+    description: >
+      If no release could be found, the ref will be used to notify about the release.
+      Useful if you use the on: workflow_dispatch trigger.
+    default: "false"
+
 runs:
-  using: "node16"
+  using: "node20"
   main: "dist/index.js"

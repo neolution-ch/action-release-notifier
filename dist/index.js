@@ -32209,12 +32209,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.postSlackMessage = void 0;
+exports.postSlackMessageForRef = exports.postSlackMessageForRelease = void 0;
 const core_1 = __nccwpck_require__(2186);
 const web_api_1 = __nccwpck_require__(431);
 const slackify_markdown_1 = __importDefault(__nccwpck_require__(9418));
 const RELEASE_BODY_TEXT_MAX_LENGTH = 2900;
-function getMessageBlocks(mainTitle, releaseBodyText, releaseName, releaseHtmlUrl, includeReleaseNotes) {
+function getMessageBlocksForRelease(mainTitle, releaseBodyText, releaseName, releaseHtmlUrl, includeReleaseNotes) {
     const blocks = [
         {
             type: "header",
@@ -32273,24 +32273,73 @@ const beautifyGitHubLinks = (releaseBody) => {
     const compareRegex = /(https:\/\/github.com\/.*\/compare\/(.*))/g;
     return releaseBody.replace(pullRequestRegex, "[#$2]($1)").replace(compareRegex, "[$2]($1)");
 };
-async function postSlackMessage(repoName, releaseData, actionInputs) {
+async function postSlackMessageForRelease(repoName, releaseData, actionInputs) {
     const { name: releaseName, body: releaseBody, html_url: releaseHtmlUrl } = releaseData;
-    const { slackToken, slackChannelIds, includeReleaseNotes } = actionInputs;
+    const { includeReleaseNotes } = actionInputs;
     const mainTitle = `${repoName} ${releaseName} has been released! :tada: :rocket:`;
     const releaseBodyText = beautifyGitHubLinks(releaseBody ?? "");
+    const blocks = getMessageBlocksForRelease(mainTitle, releaseBodyText, releaseName, releaseHtmlUrl, includeReleaseNotes);
+    return postSlackMessageInternal(repoName, actionInputs, blocks);
+}
+exports.postSlackMessageForRelease = postSlackMessageForRelease;
+async function postSlackMessageForRef(repoName, context, actionInputs) {
+    const mainTitle = `${repoName} has been released! :tada: :rocket:`;
+    const runUrl = `${context.payload.repository?.html_url}/actions/runs/${context.runId}`;
+    const shaUrl = `${context.payload.repository?.html_url}/commit/${context.sha}`;
+    const shortSha = context.sha.slice(0, 7);
+    const blocks = [
+        {
+            type: "header",
+            text: {
+                type: "plain_text",
+                text: mainTitle,
+                emoji: true,
+            },
+        },
+        {
+            type: "section",
+            text: {
+                type: "mrkdwn",
+                text: `This wasn't triggered by a GitHub release. Most likely the release worfklow was ran manually.\n
+*ref:* ${context.ref}\n
+*short sha:* ${shortSha}\n
+*sha:* <${shaUrl}|${context.sha}>`,
+            },
+        },
+        {
+            type: "section",
+            text: {
+                type: "mrkdwn",
+                text: "View run on GitHub:",
+            },
+            accessory: {
+                type: "button",
+                text: {
+                    type: "plain_text",
+                    text: `${context.runId}`,
+                    emoji: true,
+                },
+                url: runUrl,
+            },
+        },
+    ];
+    return postSlackMessageInternal(repoName, actionInputs, blocks);
+}
+exports.postSlackMessageForRef = postSlackMessageForRef;
+async function postSlackMessageInternal(repoName, actionInputs, blocks) {
+    const { slackToken, slackChannelIds } = actionInputs;
+    const mainTitle = `${repoName} has been released! :tada: :rocket:`;
     const slackWebApi = new web_api_1.WebClient(slackToken);
-    const blocks = getMessageBlocks(mainTitle, releaseBodyText, releaseName, releaseHtmlUrl, includeReleaseNotes);
     slackChannelIds.split(",").forEach(async (channelId) => {
         (0, core_1.info)(`Posting to channel ${channelId}`);
-        await slackWebApi.chat.postMessage({
+        const slackMessageResponse = await slackWebApi.chat.postMessage({
             channel: channelId,
             text: mainTitle,
             blocks: blocks,
         });
+        slackMessageResponse.ok ? (0, core_1.info)(`Message posted successfully to ${slackChannelIds}`) : (0, core_1.error)("Message failed to post");
     });
-    //   result.ok ? info(`Message posted successfully to ${slackChannelIds}`) : error("Message failed to post");
 }
-exports.postSlackMessage = postSlackMessage;
 
 
 /***/ }),
@@ -32522,33 +32571,39 @@ const actionInputs_1 = __nccwpck_require__(5148);
 const slack_1 = __nccwpck_require__(9236);
 const run = async () => {
     const actionInputs = (0, actionInputs_1.getActionInputs)();
+    const shouldFallbackToRef = (0, core_1.getInput)("fallback-to-ref", { required: false }) === "true";
     const githubApi = (0, github_1.getOctokit)(actionInputs.gitHubToken);
     const repoOwner = actionInputs.repo.split("/")[0];
     const repoName = actionInputs.repo.split("/")[1];
     const releaseId = actionInputs.releaseId || github_1.context.payload.release?.id || 0;
-    if (!releaseId) {
-        throw new Error("Please either use a release-id input or trigger this action on a release event");
+    if (!releaseId && !shouldFallbackToRef) {
+        throw new Error("Please either use a release-id input, trigger this action on a release event or set fallback-to-ref to true");
     }
-    (0, core_1.info)(`Fetching release data from GitHub with release id: '${releaseId}'`);
-    const release = await githubApi.rest.repos.getRelease({
-        owner: repoOwner,
-        repo: repoName,
-        release_id: releaseId,
-    });
-    (0, core_1.info)(`Found release: '${release.data.name}'`);
-    if (actionInputs.ignoreAlphaReleases && release.data.tag_name.includes("alpha")) {
-        (0, core_1.info)("Ignoring alpha release");
-        return;
+    if (releaseId) {
+        (0, core_1.info)(`Fetching release data from GitHub with release id: '${releaseId}'`);
+        const release = await githubApi.rest.repos.getRelease({
+            owner: repoOwner,
+            repo: repoName,
+            release_id: releaseId,
+        });
+        (0, core_1.info)(`Found release: '${release.data.name}'`);
+        if (actionInputs.ignoreAlphaReleases && release.data.tag_name.includes("alpha")) {
+            (0, core_1.info)("Ignoring alpha release");
+            return;
+        }
+        if (actionInputs.ignoreBetaReleases && release.data.tag_name.includes("beta")) {
+            (0, core_1.info)("Ignoring beta release");
+            return;
+        }
+        if (actionInputs.ignoreRcReleases && release.data.tag_name.includes("rc")) {
+            (0, core_1.info)("Ignoring rc release");
+            return;
+        }
+        await (0, slack_1.postSlackMessageForRelease)(repoName, release.data, actionInputs);
     }
-    if (actionInputs.ignoreBetaReleases && release.data.tag_name.includes("beta")) {
-        (0, core_1.info)("Ignoring beta release");
-        return;
+    else if (shouldFallbackToRef) {
+        await (0, slack_1.postSlackMessageForRef)(repoName, github_1.context, actionInputs);
     }
-    if (actionInputs.ignoreRcReleases && release.data.tag_name.includes("rc")) {
-        (0, core_1.info)("Ignoring rc release");
-        return;
-    }
-    await (0, slack_1.postSlackMessage)(repoName, release.data, actionInputs);
 };
 run();
 
