@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.0] - 2025-01-09
+
 ### Changed
 
 - Upgraded from node 16 to node 20.
@@ -46,7 +48,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Created a new action to post a GitHub release to Slack :tada:
 
-[unreleased]: https://github.com/neolution-ch/action-release-notifier/compare/v1.3.0...HEAD
+[unreleased]: https://github.com/neolution-ch/action-release-notifier/compare/v1.4.0...HEAD
+[1.4.0]: https://github.com/neolution-ch/action-release-notifier/compare/v1.3.0-1-gebb2be14b5687a1db7c4c99cd952fdd08d045b51...v1.4.0
 [1.3.0]: https://github.com/neolution-ch/action-release-notifier/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/neolution-ch/action-release-notifier/compare/v1...v1.2.0
 [1.1.0]: https://github.com/neolution-ch/action-release-notifier/compare/v1.0.0...v1.1.0
