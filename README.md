@@ -44,3 +44,4 @@ You can find a detailed description of the input parameters in the `action.yml` 
 | :heavy_multiplication_x: | ignore-alpha-releases | `false`                     |
 | :heavy_multiplication_x: | ignore-beta-releases  | `false`                     |
 | :heavy_multiplication_x: | ignore-rc-releases    | `false`                     |
+| :heavy_multiplication_x: | fallback-to-ref       | `false`                     |

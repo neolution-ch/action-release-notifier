@@ -32302,8 +32302,8 @@ async function postSlackMessageForRef(repoName, context, actionInputs) {
                 type: "mrkdwn",
                 text: `This wasn't triggered by a GitHub release. Most likely the release worfklow was ran manually.\n
 *ref:* ${context.ref}\n
-*sha:* <${shaUrl}|${context.sha}>\n
-*short sha:* ${shortSha}`,
+*short sha:* ${shortSha}\n
+*sha:* <${shaUrl}|${context.sha}>`,
             },
         },
         {

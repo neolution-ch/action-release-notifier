@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added `fallback-to-ref` input parameter to allow to use the ref as fallback if there was no release found.
+
 ## [1.3.0] - 2024-09-30
 
 ### Added
