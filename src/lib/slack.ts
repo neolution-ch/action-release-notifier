@@ -121,9 +121,9 @@ async function postSlackMessageForRef(repoName: string, context: Context, action
       type: "section",
       text: {
         type: "mrkdwn",
-        text: `This wasn't triggered by a release.\
-              Most likely the release worfklow was ran manually.\
-              ref: ${context.ref}\
+        text: `This wasn't triggered by a release.\n\n
+              Most likely the release worfklow was ran manually.\n\n
+              ref: ${context.ref}\n\n
               sha: ${context.sha}`,
       },
     },
