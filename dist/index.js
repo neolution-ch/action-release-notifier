@@ -32282,8 +32282,9 @@ async function postSlackMessageForRelease(repoName, releaseData, actionInputs) {
     return postSlackMessageInternal(repoName, actionInputs, blocks);
 }
 exports.postSlackMessageForRelease = postSlackMessageForRelease;
-async function postSlackMessageForRef(repoName, ref, actionInputs) {
+async function postSlackMessageForRef(repoName, context, actionInputs) {
     const mainTitle = `${repoName} has been released! :tada: :rocket:`;
+    const runUrl = `${context.payload.repository?.html_url}/actions/runs/${context.runId}`;
     const blocks = [
         {
             type: "header",
@@ -32297,7 +32298,26 @@ async function postSlackMessageForRef(repoName, ref, actionInputs) {
             type: "section",
             text: {
                 type: "mrkdwn",
-                text: `This wasn't triggered by a release. Most likely the release worfklow was ran manually. The ref that was released is: \`${ref}\``,
+                text: `This wasn't triggered by a release.\
+              Most likely the release worfklow was ran manually.\
+              ref: ${context.ref}\
+              sha: ${context.sha}`,
+            },
+        },
+        {
+            type: "section",
+            text: {
+                type: "mrkdwn",
+                text: "View run on GitHub:",
+            },
+            accessory: {
+                type: "button",
+                text: {
+                    type: "plain_text",
+                    text: `${context.runId}`,
+                    emoji: true,
+                },
+                url: runUrl,
             },
         },
     ];
@@ -32579,7 +32599,7 @@ const run = async () => {
         await (0, slack_1.postSlackMessageForRelease)(repoName, release.data, actionInputs);
     }
     else {
-        await (0, slack_1.postSlackMessageForRef)(repoName, github_1.context.ref, actionInputs);
+        await (0, slack_1.postSlackMessageForRef)(repoName, github_1.context, actionInputs);
     }
 };
 run();

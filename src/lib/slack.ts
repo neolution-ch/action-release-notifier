@@ -3,6 +3,7 @@ import { WebClient, Block, KnownBlock } from "@slack/web-api";
 import slackifyMarkdown from "slackify-markdown";
 import { ActionInputs } from "./actionInputs";
 import { ReleaseResponse } from "./types";
+import { Context } from "@actions/github/lib/context";
 
 const RELEASE_BODY_TEXT_MAX_LENGTH = 2900;
 
@@ -103,8 +104,10 @@ async function postSlackMessageForRelease(repoName: string, releaseData: Release
   return postSlackMessageInternal(repoName, actionInputs, blocks);
 }
 
-async function postSlackMessageForRef(repoName: string, ref: string, actionInputs: ActionInputs) {
+async function postSlackMessageForRef(repoName: string, context: Context, actionInputs: ActionInputs) {
   const mainTitle = `${repoName} has been released! :tada: :rocket:`;
+  const runUrl = `${context.payload.repository?.html_url}/actions/runs/${context.runId}`;
+
   const blocks: Block[] | KnownBlock[] = [
     {
       type: "header",
@@ -118,7 +121,26 @@ async function postSlackMessageForRef(repoName: string, ref: string, actionInput
       type: "section",
       text: {
         type: "mrkdwn",
-        text: `This wasn't triggered by a release. Most likely the release worfklow was ran manually. The ref that was released is: \`${ref}\``,
+        text: `This wasn't triggered by a release.\
+              Most likely the release worfklow was ran manually.\
+              ref: ${context.ref}\
+              sha: ${context.sha}`,
+      },
+    },
+    {
+      type: "section",
+      text: {
+        type: "mrkdwn",
+        text: "View run on GitHub:",
+      },
+      accessory: {
+        type: "button",
+        text: {
+          type: "plain_text",
+          text: `${context.runId}`,
+          emoji: true,
+        },
+        url: runUrl,
       },
     },
   ];

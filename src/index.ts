@@ -44,7 +44,7 @@ const run = async () => {
 
     await postSlackMessageForRelease(repoName, release.data, actionInputs);
   } else {
-    await postSlackMessageForRef(repoName, context.ref, actionInputs);
+    await postSlackMessageForRef(repoName, context, actionInputs);
   }
 };
 
