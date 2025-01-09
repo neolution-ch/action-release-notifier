@@ -123,3 +123,4 @@ jobs:
         with:
           slack-channel-ids: "C048JJFRTUH"
           slack-token: ${{ secrets.SLACK_RELEASE_NOTIFIER_TOKEN }}
+          fallback-to-ref: "true"

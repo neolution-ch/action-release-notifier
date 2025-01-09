@@ -32359,14 +32359,6 @@ module.exports = require("assert");
 
 /***/ }),
 
-/***/ 6206:
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("console");
-
-/***/ }),
-
 /***/ 6113:
 /***/ ((module) => {
 
@@ -32576,7 +32568,6 @@ const core_1 = __nccwpck_require__(2186);
 const github_1 = __nccwpck_require__(5438);
 const actionInputs_1 = __nccwpck_require__(5148);
 const slack_1 = __nccwpck_require__(9236);
-const console_1 = __nccwpck_require__(6206);
 const run = async () => {
     const actionInputs = (0, actionInputs_1.getActionInputs)();
     const shouldFallbackToRef = (0, core_1.getInput)("fallback-to-ref", { required: false }) === "true";
@@ -32585,7 +32576,7 @@ const run = async () => {
     const repoName = actionInputs.repo.split("/")[1];
     const releaseId = actionInputs.releaseId || github_1.context.payload.release?.id || 0;
     if (!releaseId && !shouldFallbackToRef) {
-        (0, console_1.error)("Please either use a release-id input, trigger this action on a release event or set fallback-to-ref to true");
+        throw new Error("Please either use a release-id input, trigger this action on a release event or set fallback-to-ref to true");
     }
     if (releaseId) {
         (0, core_1.info)(`Fetching release data from GitHub with release id: '${releaseId}'`);

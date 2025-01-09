@@ -2,7 +2,6 @@ import { getInput, info } from "@actions/core";
 import { context, getOctokit } from "@actions/github";
 import { getActionInputs } from "./lib/actionInputs";
 import { postSlackMessageForRef, postSlackMessageForRelease } from "./lib/slack";
-import { error } from "console";
 
 const run = async () => {
   const actionInputs = getActionInputs();
@@ -15,7 +14,7 @@ const run = async () => {
   const releaseId: number = actionInputs.releaseId || context.payload.release?.id || 0;
 
   if (!releaseId && !shouldFallbackToRef) {
-    error("Please either use a release-id input, trigger this action on a release event or set fallback-to-ref to true");
+    throw new Error("Please either use a release-id input, trigger this action on a release event or set fallback-to-ref to true");
   }
 
   if (releaseId) {
