@@ -32299,7 +32299,7 @@ async function postSlackMessageForRef(repoName, context, actionInputs) {
             type: "section",
             text: {
                 type: "mrkdwn",
-                text: `This wasn't triggered by a release. Most likely the release worfklow was ran manually.\n
+                text: `This wasn't triggered by a GitHub release. Most likely the release worfklow was ran manually.\n
 *ref:* ${context.ref}\n
 *sha:* ${context.sha}\n
 *short sha:* ${shortSha}`,
@@ -32570,13 +32570,14 @@ const actionInputs_1 = __nccwpck_require__(5148);
 const slack_1 = __nccwpck_require__(9236);
 const run = async () => {
     const actionInputs = (0, actionInputs_1.getActionInputs)();
+    const shouldFallbackToRef = (0, core_1.getInput)("fallback-to-ref", { required: false }) === "true";
     const githubApi = (0, github_1.getOctokit)(actionInputs.gitHubToken);
     const repoOwner = actionInputs.repo.split("/")[0];
     const repoName = actionInputs.repo.split("/")[1];
     const releaseId = actionInputs.releaseId || github_1.context.payload.release?.id || 0;
-    // if (!releaseId) {
-    //   throw new Error("Please either use a release-id input or trigger this action on a release event");
-    // }
+    if (!releaseId && !shouldFallbackToRef) {
+        throw new Error("Please either use a release-id input, trigger this action on a release event or set fallback-to-ref to true");
+    }
     if (releaseId) {
         (0, core_1.info)(`Fetching release data from GitHub with release id: '${releaseId}'`);
         const release = await githubApi.rest.repos.getRelease({
@@ -32599,7 +32600,7 @@ const run = async () => {
         }
         await (0, slack_1.postSlackMessageForRelease)(repoName, release.data, actionInputs);
     }
-    else {
+    else if (shouldFallbackToRef) {
         await (0, slack_1.postSlackMessageForRef)(repoName, github_1.context, actionInputs);
     }
 };

@@ -1,10 +1,11 @@
-import { info } from "@actions/core";
+import { getInput, info } from "@actions/core";
 import { context, getOctokit } from "@actions/github";
 import { getActionInputs } from "./lib/actionInputs";
 import { postSlackMessageForRef, postSlackMessageForRelease } from "./lib/slack";
 
 const run = async () => {
   const actionInputs = getActionInputs();
+  const shouldFallbackToRef = getInput("fallback-to-ref", { required: false }) === "true";
   const githubApi = getOctokit(actionInputs.gitHubToken);
 
   const repoOwner = actionInputs.repo.split("/")[0];
@@ -12,9 +13,9 @@ const run = async () => {
 
   const releaseId: number = actionInputs.releaseId || context.payload.release?.id || 0;
 
-  // if (!releaseId) {
-  //   throw new Error("Please either use a release-id input or trigger this action on a release event");
-  // }
+  if (!releaseId && !shouldFallbackToRef) {
+    throw new Error("Please either use a release-id input, trigger this action on a release event or set fallback-to-ref to true");
+  }
 
   if (releaseId) {
     info(`Fetching release data from GitHub with release id: '${releaseId}'`);
@@ -43,7 +44,7 @@ const run = async () => {
     }
 
     await postSlackMessageForRelease(repoName, release.data, actionInputs);
-  } else {
+  } else if (shouldFallbackToRef) {
     await postSlackMessageForRef(repoName, context, actionInputs);
   }
 };
