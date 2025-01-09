@@ -1,4 +1,4 @@
-import { info } from "@actions/core";
+import { error, info } from "@actions/core";
 import { WebClient, Block, KnownBlock } from "@slack/web-api";
 import slackifyMarkdown from "slackify-markdown";
 import { ActionInputs } from "./actionInputs";
@@ -158,14 +158,14 @@ async function postSlackMessageInternal(repoName: string, actionInputs: ActionIn
   slackChannelIds.split(",").forEach(async (channelId) => {
     info(`Posting to channel ${channelId}`);
 
-    await slackWebApi.chat.postMessage({
+    const slackMessageResponse = await slackWebApi.chat.postMessage({
       channel: channelId,
       text: mainTitle,
       blocks: blocks,
     });
-  });
 
-  //   result.ok ? info(`Message posted successfully to ${slackChannelIds}`) : error("Message failed to post");
+    slackMessageResponse.ok ? info(`Message posted successfully to ${slackChannelIds}`) : error("Message failed to post");
+  });
 }
 
 export { postSlackMessageForRelease, postSlackMessageForRef };
