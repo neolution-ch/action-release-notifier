@@ -32285,6 +32285,7 @@ exports.postSlackMessageForRelease = postSlackMessageForRelease;
 async function postSlackMessageForRef(repoName, context, actionInputs) {
     const mainTitle = `${repoName} has been released! :tada: :rocket:`;
     const runUrl = `${context.payload.repository?.html_url}/actions/runs/${context.runId}`;
+    const shortSha = context.sha.slice(0, 7);
     const blocks = [
         {
             type: "header",
@@ -32298,10 +32299,11 @@ async function postSlackMessageForRef(repoName, context, actionInputs) {
             type: "section",
             text: {
                 type: "mrkdwn",
-                text: `This wasn't triggered by a release.\n\n
-              Most likely the release worfklow was ran manually.\n\n
-              ref: ${context.ref}\n\n
-              sha: ${context.sha}`,
+                text: `This wasn't triggered by a release.\n
+Most likely the release worfklow was ran manually.\n
+ref: ${context.ref}\n
+sha: ${context.sha}\n
+short sha: ${shortSha}`,
             },
         },
         {
