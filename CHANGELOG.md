@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.1] - 2025-03-18
+
 ### dependabot: \#11 Bump tj-actions/changed-files from 41 to 46 in /.github/workflows
 
 ### dependabot: \#13 Bump follow-redirects from 1.15.4 to 1.15.9
@@ -58,7 +60,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Created a new action to post a GitHub release to Slack :tada:
 
-[unreleased]: https://github.com/neolution-ch/action-release-notifier/compare/v1.4.0...HEAD
+[unreleased]: https://github.com/neolution-ch/action-release-notifier/compare/v1.4.1...HEAD
+[1.4.1]: https://github.com/neolution-ch/action-release-notifier/compare/v1.4.0-5-g6b58a3ef53ca89556c9a1a5a71ee371f6d245438...v1.4.1
 [1.4.0]: https://github.com/neolution-ch/action-release-notifier/compare/v1.3.0-1-gebb2be14b5687a1db7c4c99cd952fdd08d045b51...v1.4.0
 [1.3.0]: https://github.com/neolution-ch/action-release-notifier/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/neolution-ch/action-release-notifier/compare/v1...v1.2.0
