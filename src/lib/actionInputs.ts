@@ -7,6 +7,9 @@ interface ActionInputs {
   repo: string;
   includeReleaseNotes: boolean;
   releaseId: number;
+  ignoreAlphaReleases: boolean;
+  ignoreBetaReleases: boolean;
+  ignoreRcReleases: boolean;
 }
 
 const getActionInputs = (): ActionInputs => {
@@ -16,6 +19,9 @@ const getActionInputs = (): ActionInputs => {
   const repo = getInput("repo", { required: true });
   const includeReleaseNotes = getInput("include-release-notes", { required: true }) === "true";
   const releaseId = parseInt(getInput("release-id", { required: false })) || 0;
+  const ignoreAlphaReleases = getInput("ignore-alpha-releases", { required: false }) === "true";
+  const ignoreBetaReleases = getInput("ignore-beta-releases", { required: false }) === "true";
+  const ignoreRcReleases = getInput("ignore-rc-releases", { required: false }) === "true";
 
   return {
     slackToken,
@@ -24,6 +30,9 @@ const getActionInputs = (): ActionInputs => {
     repo,
     includeReleaseNotes,
     releaseId,
+    ignoreAlphaReleases,
+    ignoreBetaReleases,
+    ignoreRcReleases,
   };
 };
 

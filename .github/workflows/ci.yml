@@ -57,7 +57,7 @@ jobs:
 
       - name: Get changed files
         id: changed-files
-        uses: tj-actions/changed-files@v34
+        uses: tj-actions/changed-files@v41
 
       - name: Check if changelog was touched
         run: |
@@ -117,3 +117,10 @@ jobs:
           slack-channel-ids: "C048JJFRTUH"
           release-id: ${{ steps.get_release.outputs.id }}
           slack-token: ${{ secrets.SLACK_RELEASE_NOTIFIER_TOKEN }}
+
+      - name: Use our own action to send a notification
+        uses: ./
+        with:
+          slack-channel-ids: "C048JJFRTUH"
+          slack-token: ${{ secrets.SLACK_RELEASE_NOTIFIER_TOKEN }}
+          fallback-to-ref: "true"
