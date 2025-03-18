@@ -11475,10 +11475,21 @@ var Writable = (__nccwpck_require__(2781).Writable);
 var assert = __nccwpck_require__(9491);
 var debug = __nccwpck_require__(1133);
 
+// Preventive platform detection
+// istanbul ignore next
+(function detectUnsupportedEnvironment() {
+  var looksLikeNode = typeof process !== "undefined";
+  var looksLikeBrowser = typeof window !== "undefined" && typeof document !== "undefined";
+  var looksLikeV8 = isFunction(Error.captureStackTrace);
+  if (!looksLikeNode && (looksLikeBrowser || !looksLikeV8)) {
+    console.warn("The follow-redirects package should be excluded from browser builds.");
+  }
+}());
+
 // Whether to use the native URL object or the legacy url module
 var useNativeURL = false;
 try {
-  assert(new URL());
+  assert(new URL(""));
 }
 catch (error) {
   useNativeURL = error.code === "ERR_INVALID_URL";
@@ -11496,6 +11507,7 @@ var preservedUrlFields = [
   "protocol",
   "query",
   "search",
+  "hash",
 ];
 
 // Create handlers that pass events from native requests
@@ -11814,17 +11826,17 @@ RedirectableRequest.prototype._performRequest = function () {
     var buffers = this._requestBodyBuffers;
     (function writeNext(error) {
       // Only write if this request has not been redirected yet
-      /* istanbul ignore else */
+      // istanbul ignore else
       if (request === self._currentRequest) {
         // Report any write errors
-        /* istanbul ignore if */
+        // istanbul ignore if
         if (error) {
           self.emit("error", error);
         }
         // Write the next buffer if there are still left
         else if (i < buffers.length) {
           var buffer = buffers[i++];
-          /* istanbul ignore else */
+          // istanbul ignore else
           if (!request.finished) {
             request.write(buffer.data, buffer.encoding, writeNext);
           }
@@ -11929,7 +11941,7 @@ RedirectableRequest.prototype._processResponse = function (response) {
      redirectUrl.protocol !== "https:" ||
      redirectUrl.host !== currentHost &&
      !isSubdomain(redirectUrl.host, currentHost)) {
-    removeMatchingHeaders(/^(?:authorization|cookie)$/i, this._options.headers);
+    removeMatchingHeaders(/^(?:(?:proxy-)?authorization|cookie)$/i, this._options.headers);
   }
 
   // Evaluate the beforeRedirect callback
@@ -12020,7 +12032,7 @@ function noop() { /* empty */ }
 
 function parseUrl(input) {
   var parsed;
-  /* istanbul ignore else */
+  // istanbul ignore else
   if (useNativeURL) {
     parsed = new URL(input);
   }
@@ -12035,7 +12047,7 @@ function parseUrl(input) {
 }
 
 function resolveUrl(relative, base) {
-  /* istanbul ignore next */
+  // istanbul ignore next
   return useNativeURL ? new URL(relative, base) : parseUrl(url.resolve(base, relative));
 }
 
@@ -12084,7 +12096,10 @@ function removeMatchingHeaders(regex, headers) {
 function createErrorType(code, message, baseClass) {
   // Create constructor
   function CustomError(properties) {
-    Error.captureStackTrace(this, this.constructor);
+    // istanbul ignore else
+    if (isFunction(Error.captureStackTrace)) {
+      Error.captureStackTrace(this, this.constructor);
+    }
     Object.assign(this, properties || {});
     this.code = code;
     this.message = this.cause ? message + ": " + this.cause.message : message;
