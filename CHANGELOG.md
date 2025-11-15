@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### dependabot: \#14 Bump js-yaml from 4.1.0 to 4.1.1
+
 ## [1.4.1] - 2025-03-18
 
 ### dependabot: \#11 Bump tj-actions/changed-files from 41 to 46 in /.github/workflows
